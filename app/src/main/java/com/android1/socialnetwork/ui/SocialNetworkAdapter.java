@@ -1,5 +1,6 @@
 package com.android1.socialnetwork.ui;
 
+import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,8 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
                     itemClickListener.onItemClick(v, getAdapterPosition()+1);
                 }
             });
+
+            ((Activity)itemView.getContext()).registerForContextMenu(title);
         }
 
         public void setData(CardData cardData){
