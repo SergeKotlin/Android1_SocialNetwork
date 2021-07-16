@@ -16,6 +16,7 @@ import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardsSource;
 import com.android1.socialnetwork.data.CardsSourceImpl;
 
+// RecyclerView командует адаптером
 public class SocialNetworkFragment extends Fragment {
 
     public static SocialNetworkFragment newInstance() {
@@ -32,10 +33,12 @@ public class SocialNetworkFragment extends Fragment {
         return view;
     }
 
+    // RecyclerView - размещает элементы списка, через Менеджера, а также делает запросы к Адаптеру на получение этих данных. Т.о. командует адаптером
     @SuppressLint("UseCompatLoadingForDrawables")
     private void initRecyclerView(RecyclerView recyclerView, CardsSource data){
         recyclerView.setHasFixedSize(true); // Установка для повышения производительности системы (все эл-ты списка одинаковые по размеру, обработка ускорится)
 
+        //
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext()); // Работаем со встроенным менеджером
         recyclerView.setLayoutManager(layoutManager);
 

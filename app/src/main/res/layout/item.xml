@@ -13,6 +13,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+        <!--  Элемент списка м.б любой сложности - однако, кроме фрагментов. Они не допускаются  -->
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"

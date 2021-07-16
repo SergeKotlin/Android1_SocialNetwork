@@ -14,12 +14,13 @@ import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardData;
 import com.android1.socialnetwork.data.CardsSource;
 
-// Класс адаптера. Всё, что связано с пользовательским интерфейсом, будем хранить в пакадже ui
+// Класс адаптера. Соединяет данные с их отображением. Через встроенный класс ViewHolder показывает данные в пользовательском интерфейсе
+// Всё, что связано с пользовательским интерфейсом, будем хранить в пакадже ui
 public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdapter.ViewHolder> {
 
     private final static String TAG = "SocialNetworkAdapter";
 //    private String[] dataSource;
-    private CardsSource dataSource;
+    private CardsSource dataSource; // Любая списковская структура данных, и элемент списка во вьюхе м.б любым - кроме фрагментов, они не допускаются
     private OnItemClickListener itemClickListener; // Слушатель, устанавливается извне
 
     public SocialNetworkAdapter(CardsSource dataSource) { // Передаём в конструктор источник данных (массив. А м.б и запрос к БД)
@@ -38,7 +39,7 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
 
     // Заменим данные в пользовательском интерфейсе
     @Override
-    public void onBindViewHolder(@NonNull SocialNetworkAdapter.ViewHolder viewHolder, int i) { // Вызывается менеджером
+    public void onBindViewHolder(@NonNull SocialNetworkAdapter.ViewHolder viewHolder, int i) { // Вызывается менеджером, подгружает данные и заполняет представления
         // Получить элемент из источника данных (БД, интернет...) и вывести на экран
 //        viewHolder.getTextView().setText(dataSource[i]);
         viewHolder.setData(dataSource.getCardData(i));
