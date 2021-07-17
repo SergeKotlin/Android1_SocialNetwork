@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,9 +39,12 @@ public class SocialNetworkFragment extends Fragment {
     private void initRecyclerView(RecyclerView recyclerView, CardsSource data){
         recyclerView.setHasFixedSize(true); // Установка для повышения производительности системы (все эл-ты списка одинаковые по размеру, обработка ускорится)
 
-        //
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext()); // Работаем со встроенным менеджером
+        // Работаем со встроенным менеджером
+        // Можно просто объявить менеджер в соотв-щем макете app:layoutManager="LinearLayoutManager" (ЕСЛИ менеджер стандартный)
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
+
 
         SocialNetworkAdapter adapter = new SocialNetworkAdapter(data); // Установим адаптер
         recyclerView.setAdapter(adapter);
@@ -49,8 +53,6 @@ public class SocialNetworkFragment extends Fragment {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator,null));
         recyclerView.addItemDecoration(itemDecoration);
-
-        /*Не забываем объявить менеджер в макете app:layoutManager="LinearLayoutManager" (если менеджер стандартный)*/
 
         adapter.SetOnItemClickListener((view, position) -> // Установим слушателя
                 toastOnItemClickListener(position));

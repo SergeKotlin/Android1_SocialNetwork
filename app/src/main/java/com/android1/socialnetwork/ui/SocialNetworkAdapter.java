@@ -87,7 +87,14 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
                 }
             });
 
-            ((Activity)itemView.getContext()).registerForContextMenu(title);
+            // Необходимо запоминать изменение таких параметров, как CheckBox. Т.е отображать их состояние и в хранимо массиве -
+            // чтобы ненароком выбор пользователя не потерялся при переиспользовании элементов списка
+            //TODO Не нашёл, как проверить. Даже при списке в 70 элементов - будто бы ничто не перерисовывается ещё
+            like.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                dataSource.getCardData(getAdapterPosition()).setLike(isChecked);
+            });
+
+            ((Activity)itemView.getContext()).registerForContextMenu(title); // Регистрируем контекстное меню
         }
 
         public void setData(CardData cardData){

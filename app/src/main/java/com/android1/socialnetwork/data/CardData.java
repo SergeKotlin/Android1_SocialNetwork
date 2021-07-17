@@ -29,4 +29,8 @@ public class CardData {
     public boolean isLike() {
         return like;
     }
+
+    public void setLike(boolean like) {
+        this.like = like;
+    }
 }

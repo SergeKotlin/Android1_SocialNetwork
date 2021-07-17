@@ -8,6 +8,9 @@
     app:cardCornerRadius="15dp"
     app:cardElevation="3dp">
 
+    <!--  Как и у NestedScrollView - у CardView м.б лишь один ребёнок.
+          Т.е наполнение стоит заворачивать в какой-то общий View-элемент  -->
+
     <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
