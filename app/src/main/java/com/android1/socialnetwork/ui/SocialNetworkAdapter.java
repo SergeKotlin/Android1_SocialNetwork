@@ -1,6 +1,7 @@
 package com.android1.socialnetwork.ui;
 
 import android.app.Activity;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android1.socialnetwork.R;
@@ -20,12 +23,13 @@ import com.android1.socialnetwork.data.CardsSource;
 public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdapter.ViewHolder> {
 
     private final static String TAG = "SocialNetworkAdapter";
-//    private String[] dataSource;
     private CardsSource dataSource; // Любая списковская структура данных, и элемент списка во вьюхе м.б любым - кроме фрагментов, они не допускаются
+    private final Fragment fragment;
     private OnItemClickListener itemClickListener; // Слушатель, устанавливается извне
 
-    public SocialNetworkAdapter(CardsSource dataSource) { // Передаём в конструктор источник данных (массив. А м.б и запрос к БД)
+    public SocialNetworkAdapter(CardsSource dataSource, Fragment fragment) { // Передаём в конструктор источник данных (массив. А м.б и запрос к БД)
         this.dataSource = dataSource;
+        this.fragment = fragment;
     }
 
     // Создадим новый пользовательский элемент
@@ -42,7 +46,6 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
     @Override
     public void onBindViewHolder(@NonNull SocialNetworkAdapter.ViewHolder viewHolder, int i) { // Вызывается менеджером, подгружает данные и заполняет представления
         // Получить элемент из источника данных (БД, интернет...) и вывести на экран
-//        viewHolder.getTextView().setText(dataSource[i]);
         viewHolder.setData(dataSource.getCardData(i));
         Log.d(TAG, "onBindViewHolder");
     }
@@ -74,11 +77,12 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-//            textView = (TextView) itemView;
             title = itemView.findViewById(R.id.title);
             description = itemView.findViewById(R.id.description);
             image = itemView.findViewById(R.id.imageView);
             like = itemView.findViewById(R.id.like);
+
+            registerContextMenu(itemView); // Регестрируем Context menu
 
             // Обработчик нажатий на этом ViewHolder
             image.setOnClickListener(v -> {
@@ -97,6 +101,20 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
                 dataSource.getCardData(getAdapterPosition()).setLike(isChecked);
             });
 
+            // Обработчик нажатий на картинке
+            image.setOnLongClickListener(new View.OnLongClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                public boolean onLongClick(View v) {
+                    itemView.showContextMenu(10, 10); // ! У меня была API 22, а showContextMenu() поддерживается с 24 версии.
+                                                            // Я чё-т натыркал, чтобы AVD привести сразу к API 30.. (24 недоступна в списке)
+                    return true;
+                }
+                /* Примечание!:
+                Если мы попробуем открыть такое меню на кликабельном элементе (нашей картинке), то
+                ничего не получится. Придётся вызывать меню при помощи метода showContextMenu().
+                Сделаем такую специальную обработку на изображении */
+            });
+
             ((Activity)itemView.getContext()).registerForContextMenu(title); // Регистрируем контекстное меню
         }
 
@@ -107,8 +125,10 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
             image.setImageResource(cardData.getPicture());
         }
 
-//        public TextView getTextView() {
-//            return textView;
-//        }
+        private void registerContextMenu(@NonNull View itemView) {
+            if (fragment != null){
+                fragment.registerForContextMenu(itemView); // Регестрируем Context menu
+            }
+        }
     }
 }

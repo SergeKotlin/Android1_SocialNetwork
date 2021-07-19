@@ -2,23 +2,36 @@ package com.android1.socialnetwork.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android1.socialnetwork.R;
+import com.android1.socialnetwork.data.CardData;
 import com.android1.socialnetwork.data.CardsSource;
 import com.android1.socialnetwork.data.CardsSourceImpl;
 
 // RecyclerView командует адаптером
 public class SocialNetworkFragment extends Fragment {
+
+    private CardsSource data;
+    private RecyclerView recyclerView;
+    private SocialNetworkAdapter adapter;
 
     public static SocialNetworkFragment newInstance() {
         return new SocialNetworkFragment();
@@ -27,16 +40,20 @@ public class SocialNetworkFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_socialnetwork, container,false); // Надуваем layout для этого фрагмента
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_lines);
-//        String[] data = getResources().getStringArray(R.array.titles);
-        CardsSource data = new CardsSourceImpl(getResources()).init(); // Получим источник данных для списка
-        initRecyclerView(recyclerView, data);
+        initView(view);
+        setHasOptionsMenu(true);
         return view;
+    }
+
+    private void initView(View view) {
+        recyclerView = view.findViewById(R.id.recycler_view_lines);
+        data = new CardsSourceImpl(getResources()).init(); // Получим источник данных для списка
+        initRecyclerView();
     }
 
     // RecyclerView - размещает элементы списка, через Менеджера, а также делает запросы к Адаптеру на получение этих данных. Т.о. командует адаптером
     @SuppressLint("UseCompatLoadingForDrawables")
-    private void initRecyclerView(RecyclerView recyclerView, CardsSource data){
+    private void initRecyclerView(){
         recyclerView.setHasFixedSize(true); // Установка для повышения производительности системы (все эл-ты списка одинаковые по размеру, обработка ускорится)
 
         // Работаем со встроенным менеджером
@@ -46,7 +63,7 @@ public class SocialNetworkFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
 
-        SocialNetworkAdapter adapter = new SocialNetworkAdapter(data); // Установим адаптер
+        adapter = new SocialNetworkAdapter(data, this); // Установим адаптер
         recyclerView.setAdapter(adapter);
 
         //  Добавим разделитель карточек
@@ -61,5 +78,49 @@ public class SocialNetworkFragment extends Fragment {
     @SuppressLint("DefaultLocale")
     private void toastOnItemClickListener(int position) {
         Toast.makeText(getContext(), String.format("Позиция - %d", position), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.cards_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_add:
+                data.addCardData(new CardData("Заголовок " + data.size(),
+                        "Описание " + data.size(),
+                        R.drawable.nature1,
+                        false));
+                adapter.notifyItemInserted(data.size() - 1);
+                recyclerView.scrollToPosition(data.size() - 1);
+                return true;
+            case R.id.action_clear:
+                data.clearCardData();
+                adapter.notifyDataSetChanged();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v,
+                                    @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.card_context, menu);
+    }
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_update:
+// Do some stuff
+                return true;
+            case R.id.action_delete:
+// Do some stuff
+                return true;
+        }
+        return super.onContextItemSelected(item);
     }
 }

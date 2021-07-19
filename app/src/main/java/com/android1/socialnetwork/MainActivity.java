@@ -38,20 +38,4 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit(); // Закрыть транзакцию
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.context, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.contextOption:
-                Toast.makeText(getApplicationContext(), "Сообщение", Toast.LENGTH_SHORT).show();
-                return true;
-        }
-        return super.onContextItemSelected(item);
-    }
 }
