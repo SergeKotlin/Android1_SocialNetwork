@@ -26,6 +26,7 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
     private CardsSource dataSource; // Любая списковская структура данных, и элемент списка во вьюхе м.б любым - кроме фрагментов, они не допускаются
     private final Fragment fragment;
     private OnItemClickListener itemClickListener; // Слушатель, устанавливается извне
+    private int contextPosition;
 
     public SocialNetworkAdapter(CardsSource dataSource, Fragment fragment) { // Передаём в конструктор источник данных (массив. А м.б и запрос к БД)
         this.dataSource = dataSource;
@@ -54,6 +55,10 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
     public int getItemCount() { // Вызывается менеджером. Возвращает размер данных
 //        return dataSource.length;
         return dataSource.size();
+    }
+
+    public int getContextPosition() {
+        return contextPosition;
     }
 
     // Сеттер слушателя нажатий
@@ -105,6 +110,7 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
             image.setOnLongClickListener(new View.OnLongClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 public boolean onLongClick(View v) {
+                    contextPosition = getLayoutPosition();
                     itemView.showContextMenu(10, 10); // ! У меня была API 22, а showContextMenu() поддерживается с 24 версии.
                                                             // Я чё-т натыркал, чтобы AVD привести сразу к API 30.. (24 недоступна в списке)
                     return true;
@@ -127,6 +133,13 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
 
         private void registerContextMenu(@NonNull View itemView) {
             if (fragment != null){
+                itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        contextPosition = getLayoutPosition();
+                        return false;
+                    }
+                });
                 fragment.registerForContextMenu(itemView); // Регестрируем Context menu
             }
         }

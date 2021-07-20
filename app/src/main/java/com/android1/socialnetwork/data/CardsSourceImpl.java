@@ -53,6 +53,7 @@ public class CardsSourceImpl implements CardsSource {
     public void deleteCardData(int position) {
         dataSource.remove(position);
     }
+
     @Override
     public void updateCardData(int position, CardData cardData) {
         dataSource.set(position, cardData);
@@ -71,6 +72,7 @@ public class CardsSourceImpl implements CardsSource {
         элементы до конца. Если же использовать scrollToPosition(), то прочитаются только элементы,
         находящиеся рядом с нужной позицией.*/
     }
+
     @Override
     public void clearCardData() {
         dataSource.clear();
