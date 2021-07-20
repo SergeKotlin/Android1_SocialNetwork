@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,6 +33,7 @@ public class    SocialNetworkFragment extends Fragment {
     private CardsSource data;
     private RecyclerView recyclerView;
     private SocialNetworkAdapter adapter;
+    private static final int MY_DEFAULT_DURATION = 1000; // Для анимации, класс DefaultItemAnimator
 
     public static SocialNetworkFragment newInstance() {
         return new SocialNetworkFragment();
@@ -71,6 +73,12 @@ public class    SocialNetworkFragment extends Fragment {
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator,null));
         recyclerView.addItemDecoration(itemDecoration);
 
+        // Установим анимацию. А чтобы было хорошо заметно, сделаем анимацию долгой. В onOptionsItemSelected() - recyclerView.smoothScrollToPosition(data.size() - 1);
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setAddDuration(MY_DEFAULT_DURATION);
+        animator.setRemoveDuration(MY_DEFAULT_DURATION);
+        recyclerView.setItemAnimator(animator);
+
         adapter.SetOnItemClickListener((view, position) -> // Установим слушателя
                 toastOnItemClickListener(position));
     }
@@ -94,7 +102,12 @@ public class    SocialNetworkFragment extends Fragment {
                         R.drawable.nature1,
                         false));
                 adapter.notifyItemInserted(data.size() - 1);
-                recyclerView.scrollToPosition(data.size() - 1);
+                recyclerView.scrollToPosition(data.size() - 1); // Таргет на соседние элменты, пролистываются лишь они. Хотя, не фига не пролистывает..
+                // Подключим долгое пролистывания для наглядности вводимой анимации действий (реализовано в initRecyclerView())
+                // TODO ! Чё не работает-то метод?! Мария! :0 В чём дело =(
+                // Чё-т глючит эта хрень! Сносит первую заметку. И вообще я не понял, что оба метода пролистывают.
+                // Вроде бы изменения небольшие д.б, а логику вижу вообще разную
+//                recyclerView.smoothScrollToPosition(data.size() - 1); // Придётся пролистывать всё-всё до нужной позиции
                 return true;
             case R.id.action_clear:
                 data.clearCardData();
