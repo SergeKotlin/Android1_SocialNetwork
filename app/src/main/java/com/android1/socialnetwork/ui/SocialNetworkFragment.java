@@ -75,9 +75,9 @@ public class    SocialNetworkFragment extends Fragment {
 
         // Установим анимацию. А чтобы было хорошо заметно, сделаем анимацию долгой. В onOptionsItemSelected() - recyclerView.smoothScrollToPosition(data.size() - 1);
         DefaultItemAnimator animator = new DefaultItemAnimator();
-        animator.setAddDuration(MY_DEFAULT_DURATION);
-        animator.setRemoveDuration(MY_DEFAULT_DURATION);
-        recyclerView.setItemAnimator(animator);
+//        animator.setAddDuration(MY_DEFAULT_DURATION);
+//        animator.setRemoveDuration(MY_DEFAULT_DURATION);
+//        recyclerView.setItemAnimator(animator);
 
         adapter.SetOnItemClickListener((view, position) -> // Установим слушателя
                 toastOnItemClickListener(position));
@@ -108,6 +108,9 @@ public class    SocialNetworkFragment extends Fragment {
                 // Чё-т глючит эта хрень! Сносит первую заметку. И вообще я не понял, что оба метода пролистывают.
                 // Вроде бы изменения небольшие д.б, а логику вижу вообще разную
 //                recyclerView.smoothScrollToPosition(data.size() - 1); // Придётся пролистывать всё-всё до нужной позиции
+//                recyclerView.scrollBy(0, 0);
+//                recyclerView.scrollBy(0, 0);
+//                recyclerView.scrollTo(0, data.size() - 1);
                 return true;
             case R.id.action_clear:
                 data.clearCardData();

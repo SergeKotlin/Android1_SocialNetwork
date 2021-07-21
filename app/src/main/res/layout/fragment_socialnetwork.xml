@@ -10,8 +10,11 @@
         android:id="@+id/recycler_view_lines"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/item"/>
+    <!--  Не забывать false'ить встроенный скроллинг RecyclerView, если используем
+    внешний NestedScrolling android:nestedScrollingEnabled="false"  -->
+    <!--  ! Но тогда перестают работать методы recyclerView.scrollToPosition(),
+            .smoothScrollToPosition()  -->
 
 </FrameLayout>
