@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import com.android1.socialnetwork.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CardsSourceImpl implements CardsSource {
@@ -23,9 +24,10 @@ public class CardsSourceImpl implements CardsSource {
         String[] titles = resources.getStringArray(R.array.titles); // строки заголовков из ресурсов
         String[] descriptions = resources.getStringArray(R.array.descriptions); // строки описаний из ресурсов
         int[] pictures = getImageArray(); // изображения
+        // для простоты дату проставляем всем заметкам текущую
 
         for (int i = 0; i < descriptions.length; i++) { // заполнение источника данных
-            dataSource.add(new CardData(titles[i], descriptions[i], pictures[i],false));
+            dataSource.add(new CardData(titles[i], descriptions[i], pictures[i],false, Calendar.getInstance().getTime()));
         }
         return this;
     }

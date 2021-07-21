@@ -1,6 +1,7 @@
 package com.android1.socialnetwork.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,10 +23,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android1.socialnetwork.MainActivity;
+import com.android1.socialnetwork.Navigation;
 import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardData;
 import com.android1.socialnetwork.data.CardsSource;
 import com.android1.socialnetwork.data.CardsSourceImpl;
+import com.android1.socialnetwork.observer.Observer;
+import com.android1.socialnetwork.observer.Publisher;
+
+import java.util.Calendar;
 
 // RecyclerView командует адаптером
 public class    SocialNetworkFragment extends Fragment {
@@ -34,6 +41,27 @@ public class    SocialNetworkFragment extends Fragment {
     private RecyclerView recyclerView;
     private SocialNetworkAdapter adapter;
     private static final int MY_DEFAULT_DURATION = 1000; // Для анимации, класс DefaultItemAnimator
+
+    private Navigation navigation;
+    private Publisher publisher;
+    private boolean moveToLastPosition; /* Признак, что при повторном открытии фрагмента
+                                           (возврате из фрагмента,  добавляющего запись)
+                                           надо прыгнуть на последнюю запись */
+    // Примечание к moveToLastPosition:
+    /* После того как завершится редактирование элемента в новом фрагменте, мы вернёмся в метод
+       обратного вызова наблюдателя Observer.updateCardData(), система начнёт обновлять этот
+       фрагмент и вызовет метод onCreateView() повторно. Нам придётся пересоздать все элементы, а
+       также адаптер. Поэтому вводится признак moveToLastPosition, означающий, что мы только что
+       добавляли данные, чтобы перепрыгнуть на последний элемент. В методе initRecyclerView()
+       вызывается переход на последний элемент. */
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        data = new CardsSourceImpl(getResources()).init(); /* Получим источник данных для списка
+                                                              Поскольку onCreateView запускается каждый раз
+                                                              при возврате в фрагмент, данные надо создавать один раз */
+    }
 
     public static SocialNetworkFragment newInstance() {
         return new SocialNetworkFragment();
@@ -47,9 +75,24 @@ public class    SocialNetworkFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        MainActivity activity = (MainActivity)context;
+        navigation = activity.getNavigation();
+        publisher = activity.getPublisher();
+    }
+
+    @Override
+    public void onDetach() {
+        navigation = null;
+        publisher = null;
+        super.onDetach();
+    }
+
     private void initView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_lines);
-        data = new CardsSourceImpl(getResources()).init(); // Получим источник данных для списка
+//        data = new CardsSourceImpl(getResources()).init(); // Получим источник данных для списка
         initRecyclerView();
     }
 
@@ -75,9 +118,14 @@ public class    SocialNetworkFragment extends Fragment {
 
         // Установим анимацию. А чтобы было хорошо заметно, сделаем анимацию долгой. В onOptionsItemSelected() - recyclerView.smoothScrollToPosition(data.size() - 1);
         DefaultItemAnimator animator = new DefaultItemAnimator();
-//        animator.setAddDuration(MY_DEFAULT_DURATION);
-//        animator.setRemoveDuration(MY_DEFAULT_DURATION);
-//        recyclerView.setItemAnimator(animator);
+        animator.setAddDuration(MY_DEFAULT_DURATION);
+        animator.setRemoveDuration(MY_DEFAULT_DURATION);
+        recyclerView.setItemAnimator(animator);
+
+        if (moveToLastPosition){
+            recyclerView.smoothScrollToPosition(data.size() - 1);
+            moveToLastPosition = false;
+        }
 
         adapter.SetOnItemClickListener((view, position) -> // Установим слушателя
                 toastOnItemClickListener(position));
@@ -97,20 +145,24 @@ public class    SocialNetworkFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add:
-                data.addCardData(new CardData("Заголовок " + data.size(),
+                navigation.addFragment(CardFragment.newInstance(), true);
+                publisher.subscribe(new Observer() {
+                    @Override
+                    public void updateCardData(CardData cardData) {
+                        data.addCardData(cardData);
+                        adapter.notifyItemInserted(data.size() - 1);
+                        moveToLastPosition = true; // это сигнал, чтобы вызванный метод onCreateView перепрыгнул на конец списка
+                    }
+                });
+
+                /*data.addCardData(new CardData("Заголовок " + data.size(),
                         "Описание " + data.size(),
                         R.drawable.nature1,
-                        false));
+                        false, Calendar.getInstance().getTime()));
                 adapter.notifyItemInserted(data.size() - 1);
                 recyclerView.scrollToPosition(data.size() - 1); // Таргет на соседние элменты, пролистываются лишь они. Хотя, не фига не пролистывает..
                 // Подключим долгое пролистывания для наглядности вводимой анимации действий (реализовано в initRecyclerView())
-                // TODO ! Чё не работает-то метод?! Мария! :0 В чём дело =(
-                // Чё-т глючит эта хрень! Сносит первую заметку. И вообще я не понял, что оба метода пролистывают.
-                // Вроде бы изменения небольшие д.б, а логику вижу вообще разную
-//                recyclerView.smoothScrollToPosition(data.size() - 1); // Придётся пролистывать всё-всё до нужной позиции
-//                recyclerView.scrollBy(0, 0);
-//                recyclerView.scrollBy(0, 0);
-//                recyclerView.scrollTo(0, data.size() - 1);
+                // recyclerView.smoothScrollToPosition(data.size() - 1); // Придётся пролистывать всё-всё до нужной позиции*/
                 return true;
             case R.id.action_clear:
                 data.clearCardData();
@@ -132,12 +184,21 @@ public class    SocialNetworkFragment extends Fragment {
         int position = adapter.getContextPosition();
         switch(item.getItemId()) {
             case R.id.action_update:
-                data.updateCardData(position,
+                navigation.addFragment(CardFragment.newInstance(data.getCardData(position)),true);
+                publisher.subscribe(new Observer() {
+                    @Override
+                    public void updateCardData(CardData cardData) {
+                        data.updateCardData(position, cardData);
+                        adapter.notifyItemChanged(position);
+                    }
+                });
+
+                /*data.updateCardData(position,
                         new CardData("Кадр " + position,
                                 data.getCardData(position).getDescription(),
                                 data.getCardData(position).getPicture(),
-                                false));
-                adapter.notifyItemChanged(position);
+                                false, Calendar.getInstance().getTime()));
+                adapter.notifyItemChanged(position);*/
                 return true;
             case R.id.action_delete:
                 data.deleteCardData(position);

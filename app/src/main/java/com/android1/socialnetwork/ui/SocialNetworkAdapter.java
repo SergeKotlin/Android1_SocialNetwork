@@ -1,5 +1,6 @@
 package com.android1.socialnetwork.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardData;
 import com.android1.socialnetwork.data.CardsSource;
+
+import java.text.SimpleDateFormat;
 
 // Класс адаптера. Соединяет данные с их отображением. Через встроенный класс ViewHolder показывает данные в пользовательском интерфейсе
 // Всё, что связано с пользовательским интерфейсом, будем хранить в пакадже ui
@@ -79,6 +82,7 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
         private TextView description;
         private AppCompatImageView image;
         private CheckBox like;
+        private TextView date;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,6 +90,7 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
             description = itemView.findViewById(R.id.description);
             image = itemView.findViewById(R.id.imageView);
             like = itemView.findViewById(R.id.like);
+            date = itemView.findViewById(R.id.date);
 
             registerContextMenu(itemView); // Регестрируем Context menu
 
@@ -124,11 +129,13 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
             ((Activity)itemView.getContext()).registerForContextMenu(title); // Регистрируем контекстное меню
         }
 
+        @SuppressLint("SimpleDateFormat")
         public void setData(CardData cardData){
             title.setText(cardData.getTitle());
             description.setText(cardData.getDescription());
             like.setChecked(cardData.isLike());
             image.setImageResource(cardData.getPicture());
+            date.setText(new SimpleDateFormat("dd-MM-yy").format(cardData.getDate()));
         }
 
         private void registerContextMenu(@NonNull View itemView) {
