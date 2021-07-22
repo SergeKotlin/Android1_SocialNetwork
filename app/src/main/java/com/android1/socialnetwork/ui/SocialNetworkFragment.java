@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,16 +46,19 @@ public class    SocialNetworkFragment extends Fragment {
 
     private Navigation navigation;
     private Publisher publisher;
-    private boolean moveToLastPosition; /* Признак, что при повторном открытии фрагмента
-                                           (возврате из фрагмента,  добавляющего запись)
-                                           надо прыгнуть на последнюю запись */
-    // Примечание к moveToLastPosition:
-    /* После того как завершится редактирование элемента в новом фрагменте, мы вернёмся в метод
+
+    private CardData newCardData = null;
+    private final long delayForBackScrollJump = 250;
+    // Примечание:
+    /* На этапе onResume(), последнем этапе добавления фрагмента, вызывается переход на последний элемент.
+
+       ! Признак добавления данных "moveToLastPosition", из методички, а также прыжок к элементу в
+       initRecyclerView() - не рабочий вариант.
+       Изначальная задумка:
+       После того как завершится редактирование элемента в новом фрагменте, мы вернёмся в метод
        обратного вызова наблюдателя Observer.updateCardData(), система начнёт обновлять этот
        фрагмент и вызовет метод onCreateView() повторно. Нам придётся пересоздать все элементы, а
-       также адаптер. Поэтому вводится признак moveToLastPosition, означающий, что мы только что
-       добавляли данные, чтобы перепрыгнуть на последний элемент. В методе initRecyclerView()
-       вызывается переход на последний элемент. */
+       также адаптер. */
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,6 +95,26 @@ public class    SocialNetworkFragment extends Fragment {
         super.onDetach();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (newCardData != null) {
+            data.addCardData(newCardData);
+            adapter.notifyItemInserted(data.size() - 1);
+
+            //TODO: Подобно костылю, но иного выхода ни Владимиром, ни методичкой не предложено
+            // Отсрочим действие. getMainLooper - синхронизация с потоком Main
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    recyclerView.smoothScrollToPosition(data.size() - 1);
+                }
+            }, delayForBackScrollJump); // Отсрочим действие
+
+            newCardData = null;
+        }
+    }
+
     private void initView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_lines);
 //        data = new CardsSourceImpl(getResources()).init(); // Получим источник данных для списка
@@ -122,11 +147,6 @@ public class    SocialNetworkFragment extends Fragment {
         animator.setRemoveDuration(MY_DEFAULT_DURATION);
         recyclerView.setItemAnimator(animator);
 
-        if (moveToLastPosition){
-            recyclerView.smoothScrollToPosition(data.size() - 1);
-            moveToLastPosition = false;
-        }
-
         adapter.SetOnItemClickListener((view, position) -> // Установим слушателя
                 toastOnItemClickListener(position));
     }
@@ -151,10 +171,7 @@ public class    SocialNetworkFragment extends Fragment {
                 publisher.subscribe(new Observer() {
                     @Override
                     public void updateCardData(CardData cardData) {
-                        data.addCardData(cardData);
-                        adapter.notifyItemInserted(data.size() - 1);
-                        moveToLastPosition = true; // это сигнал, чтобы вызванный метод onCreateView перепрыгнул на конец списка
-                        //TODO: а прыжки то не работают)))
+                        newCardData = cardData;
                     }
                 });
 
