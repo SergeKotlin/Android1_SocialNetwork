@@ -9,6 +9,7 @@ import com.android1.socialnetwork.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class CardsSourceImpl implements CardsSource {
 
@@ -16,7 +17,7 @@ public class CardsSourceImpl implements CardsSource {
     private Resources resources; // ресурсы приложения
 
     public CardsSourceImpl(Resources resources) {
-        dataSource = new ArrayList<>(7);
+        dataSource = new ArrayList<>(7); //TODO Почему в методичке здесь допущено магическое число?
         this.resources = resources;
     }
 
@@ -27,7 +28,8 @@ public class CardsSourceImpl implements CardsSource {
         // для простоты дату проставляем всем заметкам текущую
 
         for (int i = 0; i < descriptions.length; i++) { // заполнение источника данных
-            dataSource.add(new CardData(titles[i], descriptions[i], pictures[i],false, Calendar.getInstance().getTime()));
+            dataSource.add(new CardData(titles[i], descriptions[i], pictures[i],false, Calendar.getInstance(TimeZone.getDefault()).getTime()));
+            // Сэнсэй Владимир рекомендует создавать с дефолтным параметром .getInstance(TimeZone.getDefault()), чем без ничего getInstance()
         }
         return this;
     }

@@ -28,11 +28,13 @@ public class MainActivity extends AppCompatActivity {
         navigation = new Navigation(getSupportFragmentManager());
         initToolbar();
 //        addFragment(SocialNetworkFragment.newInstance());
+        // Инициализация страницы заметок при старте приложения (BackStack убираем, для выхода из приложения кнопкой назад)
         getNavigation().addFragment(SocialNetworkFragment.newInstance(), false);
     }
 
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
+        // Для работы onSupportNavigateUp():
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     @Override
-    public boolean onSupportNavigateUp() {
+    public boolean onSupportNavigateUp() { // Обработка кнопки Назад
         onBackPressed();
         return true;
     }

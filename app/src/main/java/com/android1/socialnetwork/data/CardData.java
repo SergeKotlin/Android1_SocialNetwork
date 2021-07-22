@@ -21,6 +21,8 @@ public class CardData implements Parcelable {
         this.date=date;
     }
 
+// Начало обслуживания требований Parcelable
+
     // Так как мы будем обмениваться данными - необходим объект с реализацией интерфейса Parcelable
     protected CardData(Parcel in) {
         title = in.readString();
@@ -54,6 +56,7 @@ public class CardData implements Parcelable {
             return new CardData[size];
         }
     };
+// Конец обслуживания Parcelable.
 
     public String getTitle() {
         return title;

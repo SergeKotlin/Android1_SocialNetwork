@@ -145,6 +145,8 @@ public class    SocialNetworkFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add:
+                // Убираем программное рукописное присвоение
+                // С помощью Navigation открываем новое окно для сбора данных
                 navigation.addFragment(CardFragment.newInstance(), true);
                 publisher.subscribe(new Observer() {
                     @Override
@@ -152,6 +154,7 @@ public class    SocialNetworkFragment extends Fragment {
                         data.addCardData(cardData);
                         adapter.notifyItemInserted(data.size() - 1);
                         moveToLastPosition = true; // это сигнал, чтобы вызванный метод onCreateView перепрыгнул на конец списка
+                        //TODO: а прыжки то не работают)))
                     }
                 });
 

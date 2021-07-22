@@ -20,6 +20,7 @@ import com.android1.socialnetwork.data.CardData;
 import com.android1.socialnetwork.data.CardsSource;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 // Класс адаптера. Соединяет данные с их отображением. Через встроенный класс ViewHolder показывает данные в пользовательском интерфейсе
 // Всё, что связано с пользовательским интерфейсом, будем хранить в пакадже ui
@@ -135,7 +136,9 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
             description.setText(cardData.getDescription());
             like.setChecked(cardData.isLike());
             image.setImageResource(cardData.getPicture());
-            date.setText(new SimpleDateFormat("dd-MM-yy").format(cardData.getDate()));
+            date.setText(new SimpleDateFormat(
+                    "dd-MM-yy" //, Locale.getDefault() - сенсэй Владимир добавляет по умолчанию
+                    ).format(cardData.getDate()));
         }
 
         private void registerContextMenu(@NonNull View itemView) {
