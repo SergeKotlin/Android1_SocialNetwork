@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.android1.socialnetwork.MainActivity;
 import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardData;
+import com.android1.socialnetwork.data.PictureIndexConverter;
 import com.android1.socialnetwork.observer.Publisher;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -34,12 +35,13 @@ public class CardFragment extends Fragment {
 
 // «Методы ранней подготовки» (начало)
 
-    // Для редактирования данных
     // Важное примечание!:
-    /* Сложный вариант метода, т.к метод статичный - нужно осуществить передачу данных, через аргуметы,
+        /* Сложный вариант метода, т.к метод статичный - нужно осуществить передачу данных, через аргуметы,
        в настоящий фрагмент - т.е в действителньный объект.
        Конструкторы во Фрагменте лучше НЕ ДЕЛАТЬ  - заметил сэнсэй Владимир.
        Конструктор принимает на вход много информации, context.. & etc - так что его переопределение крайне не рекомендовано. */
+
+    // Для редактирования данных
     public static CardFragment newInstance(CardData cardData) {
         CardFragment fragment = new CardFragment();
         Bundle args = new Bundle();
@@ -141,16 +143,15 @@ public class CardFragment extends Fragment {
         String title = this.title.getText().toString();
         String description = this.description.getText().toString();
         Date date = getDateFromDatePicker();
-        int picture;
-        boolean like;
         if (cardData != null){
-            picture = cardData.getPicture();
-            like = cardData.isLike();
+            CardData answer;
+            answer = new CardData(title, description, cardData.getPicture(), cardData.isLike(), date);
+            answer.setId(cardData.getId());
+            return answer;
         } else {
-            picture = R.drawable.nature1;
-            like = false;
+            int picture = PictureIndexConverter.getPictureByIndex(PictureIndexConverter.randomPictureIndex());
+            return new CardData(title, description, picture, false, date);
         }
-        return new CardData(title, description, picture, like, date);
     }
 
     // Получение даты из DatePicker

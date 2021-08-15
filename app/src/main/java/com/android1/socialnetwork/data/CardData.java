@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class CardData implements Parcelable {
 
+    private String id; // идентификатор записи (выявлять редактируемую/удаляемую запись)
     private String title; // заголовок
     private String description; // описание
     private int picture; // изображение
@@ -58,6 +59,10 @@ public class CardData implements Parcelable {
     };
 // Конец обслуживания Parcelable.
 
+    public String getId() {
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -76,6 +81,10 @@ public class CardData implements Parcelable {
 
     public Date getDate() {
         return date;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setLike(boolean like) {

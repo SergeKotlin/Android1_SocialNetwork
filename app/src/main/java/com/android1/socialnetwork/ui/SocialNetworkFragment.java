@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,19 +21,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android1.socialnetwork.MainActivity;
 import com.android1.socialnetwork.Navigation;
 import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardData;
+import com.android1.socialnetwork.data.CardSourceFirebaseImpl;
 import com.android1.socialnetwork.data.CardsSource;
 import com.android1.socialnetwork.data.CardsSourceImpl;
+import com.android1.socialnetwork.data.CardsSourceResponse;
 import com.android1.socialnetwork.observer.Observer;
 import com.android1.socialnetwork.observer.Publisher;
-
-import java.util.Calendar;
 
 // RecyclerView командует адаптером
 public class    SocialNetworkFragment extends Fragment {
@@ -60,23 +58,26 @@ public class    SocialNetworkFragment extends Fragment {
        фрагмент и вызовет метод onCreateView() повторно. Нам придётся пересоздать все элементы, а
        также адаптер. */
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        data = new CardsSourceImpl(getResources()).init(); /* Получим источник данных для списка
-                                                              Поскольку onCreateView запускается каждый раз
-                                                              при возврате в фрагмент, данные надо создавать один раз */
-    }
-
     public static SocialNetworkFragment newInstance() {
         return new SocialNetworkFragment();
     }
+
+    /*@Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        data = new CardsSourceImpl(getResources()).init(); */
+    /* Здесь получим источник данных для списка
+    Поскольку onCreateView запускается каждый раз
+    при возврате в фрагмент, данные надо создавать один раз *//*
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_socialnetwork, container,false); // Надуваем layout для этого фрагмента
         initView(view);
         setHasOptionsMenu(true);
+        data = new CardSourceFirebaseImpl().init(cardsData -> adapter.notifyDataSetChanged()); // Для установки данных после чтения из Firestore
+        adapter.setDataSource(data);
         return view;
     }
 
@@ -100,7 +101,7 @@ public class    SocialNetworkFragment extends Fragment {
         super.onResume();
         if (newCardData != null) {
             data.addCardData(newCardData);
-            adapter.notifyItemInserted(data.size() - 1);
+            adapter.notifyItemInserted(data.size() - 1); // Говорит адаптеру добавить новый элемент в список
 
             //TODO: Подобно костылю, но иного выхода ни Владимиром, ни методичкой не предложено
             // Отсрочим действие. getMainLooper - синхронизация с потоком Main
@@ -133,7 +134,7 @@ public class    SocialNetworkFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
 
-        adapter = new SocialNetworkAdapter(data, this); // Установим адаптер
+        adapter = new SocialNetworkAdapter(this); // Установим адаптер
         recyclerView.setAdapter(adapter);
 
         //  Добавим разделитель карточек
@@ -163,33 +164,7 @@ public class    SocialNetworkFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_add:
-                // Убираем программное рукописное присвоение
-                // С помощью Navigation открываем новое окно для сбора данных
-                navigation.addFragment(CardFragment.newInstance(), true);
-                publisher.subscribe(new Observer() {
-                    @Override
-                    public void updateCardData(CardData cardData) {
-                        newCardData = cardData;
-                    }
-                });
-
-                /*data.addCardData(new CardData("Заголовок " + data.size(),
-                        "Описание " + data.size(),
-                        R.drawable.nature1,
-                        false, Calendar.getInstance().getTime()));
-                adapter.notifyItemInserted(data.size() - 1);
-                recyclerView.scrollToPosition(data.size() - 1); // Таргет на соседние элменты, пролистываются лишь они. Хотя, не фига не пролистывает..
-                // Подключим долгое пролистывания для наглядности вводимой анимации действий (реализовано в initRecyclerView())
-                // recyclerView.smoothScrollToPosition(data.size() - 1); // Придётся пролистывать всё-всё до нужной позиции*/
-                return true;
-            case R.id.action_clear:
-                data.clearCardData();
-                adapter.notifyDataSetChanged();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return onItemSelected(item.getItemId()) || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -201,30 +176,59 @@ public class    SocialNetworkFragment extends Fragment {
     }
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int position = adapter.getContextPosition();
-        switch(item.getItemId()) {
-            case R.id.action_update:
-                navigation.addFragment(CardFragment.newInstance(data.getCardData(position)),true);
+        return onItemSelected(item.getItemId()) || super.onContextItemSelected(item);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    private boolean onItemSelected(int menuItemId){
+        switch (menuItemId){
+            case R.id.action_add:
+                navigation.addFragment(CardFragment.newInstance(), true); // С помощью Navigation открываем новое окно для сбора данных
                 publisher.subscribe(new Observer() {
                     @Override
                     public void updateCardData(CardData cardData) {
-                        data.updateCardData(position, cardData);
-                        adapter.notifyItemChanged(position);
+                        newCardData = cardData;
+
+                        // Содержимое в onResume()
+
+                        // Предыдущий вариант (рукописное добавление):
+                        /* data.addCardData(new CardData("Заголовок " + data.size(),
+                                "Описание " + data.size(),
+                                R.drawable.nature1,
+                                false, Calendar.getInstance().getTime()));
+
+                        adapter.notifyItemInserted(data.size() - 1);
+                        recyclerView.scrollToPosition(data.size() - 1); // Таргет на соседние элменты, пролистываются лишь они. Хотя, не фига не пролистывает..
+                        // Подключим долгое пролистывания для наглядности вводимой анимации действий (реализовано в initRecyclerView())
+                        // recyclerView.smoothScrollToPosition(data.size() - 1); // Придётся пролистывать всё-всё до нужной позиции */
                     }
+                });
+                return true;
+            case R.id.action_update:
+                final int updatePosition = adapter.getContextPosition();
+                navigation.addFragment(CardFragment.newInstance(data.getCardData(updatePosition)), true);
+                publisher.subscribe(cardData -> {
+                    data.updateCardData(updatePosition, cardData);
+                    adapter.notifyItemChanged(updatePosition);
                 });
 
                 /*data.updateCardData(position,
-                        new CardData("Кадр " + position,
-                                data.getCardData(position).getDescription(),
-                                data.getCardData(position).getPicture(),
-                                false, Calendar.getInstance().getTime()));
+                new CardData("Кадр " + position,
+                        data.getCardData(position).getDescription(),
+                        data.getCardData(position).getPicture(),
+                        false, Calendar.getInstance().getTime()));
                 adapter.notifyItemChanged(position);*/
                 return true;
             case R.id.action_delete:
-                data.deleteCardData(position);
-                adapter.notifyItemRemoved(position);
+                int deletePosition = adapter.getContextPosition();
+                data.deleteCardData(deletePosition);
+                adapter.notifyItemRemoved(deletePosition);
+                return true;
+            case R.id.action_clear:
+                data.clearCardData();
+                adapter.notifyDataSetChanged(); // Говорит адаптеру пересобрать список заново RecyclerView
                 return true;
         }
-        return super.onContextItemSelected(item);
+        return false;
     }
 }

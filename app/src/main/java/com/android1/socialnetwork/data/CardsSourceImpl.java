@@ -21,7 +21,7 @@ public class CardsSourceImpl implements CardsSource {
         this.resources = resources;
     }
 
-    public CardsSourceImpl init(){
+    public CardsSource init(CardsSourceResponse cardsSourceResponse){
         String[] titles = resources.getStringArray(R.array.titles); // строки заголовков из ресурсов
         String[] descriptions = resources.getStringArray(R.array.descriptions); // строки описаний из ресурсов
         int[] pictures = getImageArray(); // изображения
@@ -31,6 +31,11 @@ public class CardsSourceImpl implements CardsSource {
             dataSource.add(new CardData(titles[i], descriptions[i], pictures[i],false, Calendar.getInstance(TimeZone.getDefault()).getTime()));
             // Сэнсэй Владимир рекомендует создавать с дефолтным параметром .getInstance(TimeZone.getDefault()), чем без ничего getInstance()
         }
+
+        if (cardsSourceResponse != null){
+            cardsSourceResponse.initialized(this);
+        }
+
         return this;
     }
 

@@ -32,9 +32,17 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
     private OnItemClickListener itemClickListener; // Слушатель, устанавливается извне
     private int contextPosition;
 
-    public SocialNetworkAdapter(CardsSource dataSource, Fragment fragment) { // Передаём в конструктор источник данных (массив. А м.б и запрос к БД)
-        this.dataSource = dataSource;
+    public SocialNetworkAdapter(Fragment fragment) { // Передаём в конструктор источник данных (массив. А м.б и запрос к БД)
         this.fragment = fragment;
+    }
+
+    public void setDataSource(CardsSource dataSource){
+        this.dataSource = dataSource;
+        notifyDataSetChanged();
+        // Примечание
+            /* Поскольку запрос на получение данных стал асинхронным, это надо учесть и в списке. Источник
+            данных будем подставлять не сразу, а после получения данных. Соответственно, появляется метод
+            установки данных для RecyclerView. */
     }
 
     // Создадим новый пользовательский элемент
@@ -127,7 +135,7 @@ public class SocialNetworkAdapter extends RecyclerView.Adapter<SocialNetworkAdap
                 Сделаем такую специальную обработку на изображении */
             });
 
-            ((Activity)itemView.getContext()).registerForContextMenu(title); // Регистрируем контекстное меню
+//            ((Activity)itemView.getContext()).registerForContextMenu(title); // Регистрируем контекстное меню
         }
 
         @SuppressLint("SimpleDateFormat")

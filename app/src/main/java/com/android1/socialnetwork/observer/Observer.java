@@ -6,6 +6,8 @@ import com.android1.socialnetwork.data.CardData;
 // при помощи которого мы и будем обмениваться информацией
 // «Зачем просто жить? Усложним»
 
+// Вместо Observer - можно воспользоваться EVENT BUS
+
 // Интерфейс наблюдателя
 public interface Observer {
     void updateCardData(CardData cardData);
