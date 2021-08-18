@@ -15,11 +15,12 @@ import android.widget.Toast;
 
 import com.android1.socialnetwork.observer.Publisher;
 import com.android1.socialnetwork.ui.SocialNetworkFragment;
+import com.android1.socialnetwork.ui.StartFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private Navigation navigation;
-    private Publisher publisher = new Publisher();
+    private final Publisher publisher = new Publisher();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +28,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         navigation = new Navigation(getSupportFragmentManager());
         initToolbar();
-//        addFragment(SocialNetworkFragment.newInstance());
         // Инициализация страницы заметок при старте приложения (BackStack убираем, для выхода из приложения кнопкой назад)
-        getNavigation().addFragment(SocialNetworkFragment.newInstance(), false);
+//        getNavigation().addFragment(SocialNetworkFragment.newInstance(), false);
+        getNavigation().addFragment(StartFragment.newInstance(), false);
     }
 
     private void initToolbar() {
@@ -39,14 +40,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
-
-    /*private void addFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager(); //Получить менеджер фрагментов
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); // Открыть транзакцию
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null); // Кинуть в стэк обратного вызова
-        fragmentTransaction.commit(); // Закрыть транзакцию
-    }*/
 
     @Override
     public boolean onSupportNavigateUp() { // Обработка кнопки Назад

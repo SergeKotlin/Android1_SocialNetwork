@@ -29,8 +29,6 @@ import com.android1.socialnetwork.R;
 import com.android1.socialnetwork.data.CardData;
 import com.android1.socialnetwork.data.CardSourceFirebaseImpl;
 import com.android1.socialnetwork.data.CardsSource;
-import com.android1.socialnetwork.data.CardsSourceImpl;
-import com.android1.socialnetwork.data.CardsSourceResponse;
 import com.android1.socialnetwork.observer.Observer;
 import com.android1.socialnetwork.observer.Publisher;
 
