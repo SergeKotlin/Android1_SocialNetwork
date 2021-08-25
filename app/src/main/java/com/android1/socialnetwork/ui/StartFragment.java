@@ -21,6 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 
@@ -38,6 +39,9 @@ public class StartFragment extends Fragment {
 
     // Кнопка регистрации через Google
     private com.google.android.gms.common.SignInButton buttonSignIn;
+
+    // Кнопка выхода из Google
+    private MaterialButton buttonSingOut;
     private TextView emailView;
     private MaterialButton continue_;
 
@@ -92,6 +96,10 @@ public class StartFragment extends Fragment {
         continue_.setOnClickListener(v ->
                 navigation.addFragment(SocialNetworkFragment.newInstance(),
                 false));
+
+        // Кнопка выхода
+        buttonSingOut = view.findViewById(R.id.sing_out_button);
+        buttonSingOut.setOnClickListener(v -> signOut());
     }
 
     @Override
@@ -106,6 +114,18 @@ public class StartFragment extends Fragment {
             // Обновим почтовый адрес этого пользователя и выведем его на экран
             updateUI(account.getEmail());
         }
+    }
+
+    // Выход из учётной записи в приложении
+    private void signOut() {
+        googleSignInClient.signOut()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        updateUI("");
+                        enableSign();
+                    }
+                });
     }
 
     // Инициируем регистрацию пользователя
@@ -157,11 +177,13 @@ public class StartFragment extends Fragment {
     private void enableSign(){
         buttonSignIn.setEnabled(true);
         continue_.setEnabled(false);
+        buttonSingOut.setEnabled(false);
     }
 
     // Запретить аутентификацию (уже прошла) и разрешить остальные действия
     private void disableSign(){
         buttonSignIn.setEnabled(false);
         continue_.setEnabled(true);
+        buttonSingOut.setEnabled(true);
     }
 }
