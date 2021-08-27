@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Dialog Windows</string>
+<!--    -->
+    <string name="alert_dialog_1btn">Alert Dialog с одной кнопкой</string>
+    <string name="alert_dialog_3bts">Alert Dialog с тремя кнопками</string>
+    <string name="exclamation">Диалоговое сообщение ;)</string>
+    <string name="press_button">Нажмите продолжить</string>
+    <string name="button">ПРОДОЛЖИТЬ</string>
+    <string name="yes">Ага</string>
+    <string name="no">Гонишь!</string>
+    <string name="dunno">Чё сказал?</string>
+    <string name="alert_dialog_list">Alert Dialog со списком</string>
+    <string name="alert_dialog_list_single">Alert Dialog с выбором одного</string>
+    <string name="alert_dialog_list_multi">Alert Dialog с выбором нескольких</string>
+<!--    -->
+</resources>

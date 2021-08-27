@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="choose">
+        <item>@string/first_hair</item>
+        <item>@string/second_hair</item>
+        <item>@string/third_hair</item>
+    </string-array>
+    <string name="first_hair">Брюнетка</string>
+    <string name="second_hair">Шатенка</string>
+    <string name="third_hair">Блондинка</string>
+</resources>
