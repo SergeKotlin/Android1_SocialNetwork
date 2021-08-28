@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private Button alertList;
     private Button alertSingleList;
     private Button alertMultiList;
+    private Button alertCustom;
 
     private String[] items;
     private int chosen = -1; // Здесь будет храниться выбранный пункт для списка
@@ -38,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         alertList = findViewById(R.id.alertDialogList);
         alertSingleList = findViewById(R.id.alertDialogListSingle);
         alertMultiList = findViewById(R.id.alertDialogListMulti);
-    };
+        alertCustom = findViewById(R.id.alertDialogCustom);
+    }
 
     private void initResource() {
         items = getResources().getStringArray(R.array.choose);
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         alertList.setOnClickListener(clickAlertDialogList);
         alertSingleList.setOnClickListener(clickAlertDialogListSingle);
         alertMultiList.setOnClickListener(clickAlertDialogListMulti);
+        alertCustom.setOnClickListener(clickAlertDialogCustom);
     }
 
     private final View.OnClickListener clickAlertDialog1 = new View.OnClickListener() {
@@ -219,4 +223,27 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private final View.OnClickListener clickAlertDialogCustom = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            final View contentView = getLayoutInflater().inflate(R.layout.dialog_custom, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setTitle("Какого цвета у мамы волосы?")
+                    .setView(contentView)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    EditText editText = contentView.findViewById(R.id.editText);
+                                    String answer = editText.getText().toString();
+                                    Toast.makeText(MainActivity.this, answer,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    };
 }
