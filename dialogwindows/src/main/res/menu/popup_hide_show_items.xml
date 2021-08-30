@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/btnHideAlertDialogs"
+        android:id="@+id/btnHideAlertDialogs" />
+    <item android:title="@string/btnHideFragmentDialog"
+        android:id="@+id/btnHideFragmentDialogs" />
+</menu>

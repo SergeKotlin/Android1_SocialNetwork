@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Dialog Windows</string>
-<!--    -->
+    <!--  AlertDialogs  -->
     <string name="alert_dialog_1btn">Alert Dialog с одной кнопкой</string>
     <string name="alert_dialog_3bts">Alert Dialog с тремя кнопками</string>
     <string name="exclamation">Диалоговое сообщение ;)</string>
@@ -14,6 +14,15 @@
     <string name="alert_dialog_list_multi">Alert Dialog с выбором нескольких</string>
     <string name="alert_dialog_custom_form">Alert Dialog с кастомной формой</string>
     <string name="alert_dialog_custom_form_hint">User message</string>
-
-<!--    -->
+    <!--  Controls  -->
+    <string name="btnHideAlertDialogs">View AlertDialogs</string>
+    <string name="btnHideFragmentDialog">View FragmentDialog</string>
+    <!--  FragmentDialog  -->
+    <string name="dialog_builder">Диалог с билдером</string>
+    <string name="dialog_custom">Диалог кастомный</string>
+    <string name="title_dialog">Введите имя</string>
+    <string name="done">готово</string>
+    <!--  BottomSheetDialogFragment  -->
+    <string name="dialog_message">Диалог снизу</string>
+    <string name="dialog">Диалог</string>
 </resources>

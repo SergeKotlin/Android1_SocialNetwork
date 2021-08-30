@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <EditText
         android:id="@+id/editText"
         android:layout_width="match_parent"
@@ -12,4 +13,5 @@
         android:inputType="textPersonName"
         android:autofillHints="@string/alert_dialog_custom_form_hint"
         tools:ignore="LabelFor" />
+
 </LinearLayout>
